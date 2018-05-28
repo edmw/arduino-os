@@ -1,3 +1,5 @@
+#if OS_USE_FILES
+
 #ifndef __FILES_H__
 #define __FILES_H__
 
@@ -53,5 +55,7 @@ private:
     bool production;
 
 };
+
+#endif
 
 #endif

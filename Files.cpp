@@ -33,6 +33,8 @@
 #include "OS.h"
 extern OS os;
 
+#if OS_USE_FILES
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 Files::Files(void) {
@@ -96,3 +98,5 @@ bool Files::exists(String filename) {
     return false;
     #endif
 }
+
+#endif

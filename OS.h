@@ -25,7 +25,17 @@
 // SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// use #define OS_USE_STORAGE to disable storage support
+// use OS_USE_FILES to disable files support
+#ifndef OS_USE_FILES
+#define OS_USE_FILES true
+#endif
+
+// use OS_USE_NETWORK to disable network support
+#ifndef OS_USE_NETWORK
+#define OS_USE_NETWORK true
+#endif
+
+// use OS_USE_STORAGE to disable storage support
 #ifndef OS_USE_STORAGE
 #define OS_USE_STORAGE true
 #endif
@@ -45,8 +55,12 @@
 #if OS_USE_STORAGE
 #include "Storage.h"
 #endif
+#if OS_USE_FILES
 #include "Files.h"
+#endif
+#if OS_USE_NETWORK
 #include "Network.h"
+#endif
 
 #ifndef ESP8266
 #include "Ticker.h"
@@ -78,8 +92,12 @@ public:
 
     Notification notification;
 
+    #if OS_USE_FILES
     Files files;
+    #endif
+    #if OS_USE_NETWORK
     Network network;
+    #endif
 
     String error;
 };

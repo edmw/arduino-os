@@ -1,3 +1,5 @@
+#if OS_USE_NETWORK
+
 #ifndef __NETWORK_H__
 #define __NETWORK_H__
 
@@ -66,5 +68,7 @@ private:
     bool production;
 
 };
+
+#endif
 
 #endif

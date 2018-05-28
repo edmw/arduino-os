@@ -51,8 +51,12 @@ bool OS::begin(bool production) {
     signaling.begin(production);
     notification.begin(production);
 
+    #if OS_USE_FILES
     files.begin(production);
+    #endif
+    #if OS_USE_NETWORK
     network.begin(production);
+    #endif
 
     #ifdef ESP8266
     ota_begin();
