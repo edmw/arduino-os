@@ -24,17 +24,17 @@
 
 #include <Arduino.h>
 
-#ifdef ESP8266
-#include <WiFiManager.h>
-#include <Ticker.h>
-#endif
-
 #include "Network.h"
 
 #include "OS.h"
 extern OS os;
 
 #if OS_USE_NETWORK
+
+#ifdef ESP8266
+#include <WiFiManager.h>
+#include <Ticker.h>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
