@@ -23,6 +23,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <Arduino.h>
+#ifdef ESP8266
+#include <Ticker.h>
+#endif
+#ifdef ESP32
+#include "analogWrite.h"
+#endif
 
 #include "Signaling.h"
 
@@ -211,25 +217,25 @@ void Signaling::once(uint32_t on_ms, uint32_t off_ms) {
 void Signaling::elapsing(uint32_t ms) {
     if (impl->ledpin >= 0) {
         impl->on(true);
-        impl->ticker.attach_ms(ms, &Implementation::__elapsing, this);
+        impl->ticker.attach_ms(ms, &Implementation::__elapsing, (void*)this);
     }
 }
 
 void Signaling::blinking() {
     if (impl->ledpin >= 0) {
-        impl->ticker.attach_ms(1000, &Implementation::__blinking, this);
+        impl->ticker.attach_ms(1000, &Implementation::__blinking, (void*)this);
     }
 }
 
 void Signaling::flashing() {
     if (impl->ledpin >= 0) {
-        impl->ticker.attach_ms(100, &Implementation::__flashing, this);
+        impl->ticker.attach_ms(100, &Implementation::__flashing, (void*)this);
     }
 }
 
 void Signaling::pulsing() {
     if (impl->ledpin >= 0) {
-        impl->ticker.attach_ms(10, &Implementation::__pulsing, this);
+        impl->ticker.attach_ms(10, &Implementation::__pulsing, (void*)this);
     }
 }
 
