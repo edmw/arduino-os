@@ -22,6 +22,8 @@
 // SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifndef ESP8266
+
 #include "Ticker.h"
 
 #include "OS.h"
@@ -92,3 +94,5 @@ status_t Ticker::getState() {
 uint32_t Ticker::getInterval() {
     return interval;
 }
+
+#endif
