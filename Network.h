@@ -45,7 +45,9 @@
 
 class Network {
 public:
-    Network(void);
+    Network();
+    Network(String deviceid);
+    Network(String deviceid, String ssid, String sspw);
 
     // Begin managing the WiFi network. Must be called before any other method.
     bool begin(bool production);
@@ -54,10 +56,12 @@ public:
     uint16_t connectTimeout = 60;
 
     // Connects to the WiFi network.
-    bool connect(bool reset = false);
+    bool connect();
 
     // Disconnects from the WiFi network.
     void disconnect(void);
+
+    String deviceid;
 
     #ifdef ESP8266
     // Returns a new WiFi client. Only available on ESP8266.
@@ -67,6 +71,11 @@ public:
 private:
     bool production;
 
+    String ssid;
+    String sspw;
+
+    bool connect(String ssid, String sspw);
+    bool connect(String deviceid);
 };
 
 #endif

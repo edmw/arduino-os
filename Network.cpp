@@ -29,20 +29,40 @@
 #include "OS.h"
 extern OS os;
 
+#define REALM F("NETWORK")
+
 #if OS_USE_NETWORK
 
 #ifdef ESP8266
+#include <ESP8266WiFi.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-Network::Network(void) {
+Network::Network() : ssid(""), sspw("") {
+    #ifdef ESP8266
+    deviceid = "ESP" + String(ESP.getChipId());
+    #else
+    deviceid = "Arduino" + String(random(1000, 10000));
+    #endif
+}
+
+Network::Network(String deviceid)
+    : deviceid(deviceid), ssid(""), sspw("") {
+}
+
+Network::Network(String deviceid, String ssid, String sspw)
+    : deviceid(deviceid), ssid(ssid), sspw(sspw) {
 }
 
 bool Network::begin(bool prodction) {
     this->production = production;
+    #ifdef ESP8266
+    WiFi.hostname(deviceid.c_str());
+    os.notification.info(REALM, F("*WIFI: device id:"), deviceid);
+    #endif
     return true;
 }
 
@@ -71,12 +91,11 @@ void saveConfigCallback() {
 void prepareNetworkForWiFi(WiFiManager *wm, Network *network) {
     networkToConfig = network;
     configChanged = false;
-    ticker.attach_ms(500, []() {
+    ticker.attach_ms(100, []() {
         os.signaling.toggle();
     });
     wm->setConfigPortalTimeout(300);
     wm->setAPCallback(startConfigCallback);
-    wm->setSaveConfigCallback(saveConfigCallback);
 }
 
 void finishNetworkForWiFi(WiFiManager *wm, Network *network) {
@@ -84,14 +103,33 @@ void finishNetworkForWiFi(WiFiManager *wm, Network *network) {
     os.signaling.off();
 }
 
-bool Network::connect(bool reset) {
-    WiFi.forceSleepWake();
+bool Network::connect() {
+    System::wifiOn();
 
-    if (reset) {
-        WiFi.persistent(true);
-        WiFi.disconnect(true);
+    if (connect(ssid, sspw)) {
+        return true;
     }
-    WiFi.persistent(true);
+
+    if (connect(deviceid)) {
+        return true;
+    }
+
+    return false;
+}
+
+bool Network::connect(String ssid, String password) {
+    if ((ssid.length() == 0) || (sspw.length() == 0)) { return false; }
+
+    WiFi.begin(ssid.c_str(), password.c_str());
+    int status = WiFi.waitForConnectResult();
+    if (status != WL_CONNECTED) {
+        os.notification.info(REALM, F("*WIFI: status:"), status);
+    }
+    return status == WL_CONNECTED;
+}
+
+bool Network::connect(String deviceid) {
+    if (deviceid.length() == 0) { return false; }
 
     WiFiManager wiFiManager;
     if (production) {
@@ -100,19 +138,28 @@ bool Network::connect(bool reset) {
     }
     else {
         // Development: print debug output
+        os.notification.info(REALM, F("*WIFI: SSID:"), WiFi.SSID());
+        os.notification.info(REALM, F("*WIFI: PASS:"), WiFi.psk());
         wiFiManager.setDebugOutput(true);
     }
-    wiFiManager.setConnectTimeout(connectTimeout);
+    wiFiManager.setConnectTimeout(1*60);
+    wiFiManager.setConfigPortalTimeout(5*60);
 
     bool result = false;
+
     prepareNetworkForWiFi(&wiFiManager, this);
-    result = wiFiManager.autoConnect();
+
+    if (wiFiManager.autoConnect(deviceid.c_str(), NULL)) {
+        result = true;
+    }
+
     finishNetworkForWiFi(&wiFiManager, this);
+
     return result;
 }
 
 void Network::disconnect(void) {
-    WiFi.forceSleepBegin();
+    WiFi.disconnect();
 }
 
 std::unique_ptr<Client> Network::createClient(void) {
@@ -123,7 +170,15 @@ std::unique_ptr<Client> Network::createClient(void) {
 #else
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool Network::connect(bool reset) {
+bool Network::connect(void) {
+    return false;
+}
+
+bool connect(String ssid, String sspw) {
+    return false;
+}
+
+bool connect(String deviceid) {
     return false;
 }
 
