@@ -24,7 +24,7 @@
 
 #ifndef ESP8266
 
-#include "Ticker.h"
+#include "OSTicker.h"
 
 #include "OS.h"
 extern OS os;

@@ -67,4 +67,6 @@ private:
 
 #endif // TICKER_H
 
+#else // ESP8266
+#include <Ticker.h>
 #endif // ESP8266

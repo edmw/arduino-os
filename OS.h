@@ -64,9 +64,7 @@
 #include "Network.h"
 #endif
 
-#ifndef ESP8266
-#include "Ticker.h"
-#endif
+#include "OSTicker.h"
 
 class OS {
 public:
