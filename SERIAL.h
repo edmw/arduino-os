@@ -28,6 +28,7 @@
 
 #if SERIAL_OUT
 #define SERIAL_BEGIN() { delay(500); Serial.begin(9600); while (!Serial); }
+#define SERIAL_DEBUG() { Serial.setDebugOutput(true); }
 #define SERIAL_PRINT(s) { Serial.print(s); }
 #define SERIAL_PRINTF(s, f) { Serial.print(s, f); }
 #define SERIAL_PRINTB(b) { b ? Serial.print(F("TRUE")) : Serial.print(F("FALSE")); }
