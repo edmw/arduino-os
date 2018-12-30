@@ -46,6 +46,7 @@ bool OS::begin(bool production) {
     SERIAL_BEGIN();
     if (!production) {
         SERIAL_PRINTLN(F("OS::begin"));
+        SERIAL_PRINTLN(System::lastException());
     }
 
     signaling.begin(production);
@@ -59,7 +60,9 @@ bool OS::begin(bool production) {
     #endif
 
     #ifdef ESP8266
+    #if OS_USE_OTA
     ota_begin();
+    #endif
     #endif
 
     return true;
@@ -67,8 +70,12 @@ bool OS::begin(bool production) {
 
 void OS::yield(void) {
     #ifdef ESP8266
+    #if OS_USE_OTA
     ota_handle();
     #endif
+    ESP.wdtFeed();
+    #endif
+    delay(1);
 }
 
 void OS::fatal(void) {

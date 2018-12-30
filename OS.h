@@ -49,6 +49,8 @@
 #include "micros.h"
 #include "memory.h"
 
+#include "System.h"
+
 #include "Signaling.h"
 #include "Notification.h"
 
